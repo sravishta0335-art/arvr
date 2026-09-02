@@ -123,7 +123,10 @@
   </div>
 
 
-  <!-- AR SCENE -->
+  <!-- ==========================================================
+       AR SCENE
+       ========================================================== -->
+
   <a-scene
     vr-mode-ui="enabled:false;"
     loading-screen="enabled:false;"
@@ -133,25 +136,26 @@
     gesture-detector
   >
 
-    <!-- CUSTOM AR MARKER -->
+    <!-- CUSTOM MARKER -->
+    <!-- marker.patt is in the SAME folder as index.html -->
+
     <a-marker
       id="markerA"
       type="pattern"
       preset="custom"
-      url="assets/marker.patt"
+      url="marker.patt"
       raycaster="objects:.clickable"
       emitevents="true"
       cursor="fuse:false; rayOrigin:mouse;"
     >
 
-      <!-- =====================================================
-           1. ORIGINAL VISITING CARD
-           This appears first.
-           ===================================================== -->
+      <!-- ======================================================
+           ORIGINAL VISITING CARD
+           ====================================================== -->
 
       <a-image
         id="cardArtwork"
-        src="assets/asset.png"
+        src="asset.png"
         width="1.75"
         height="1"
         class="clickable"
@@ -160,11 +164,9 @@
       </a-image>
 
 
-      <!-- =====================================================
-           2. LOGO ANIMATION
-           Transparent logo pieces are placed over the
-           original Lutara logo.
-           ===================================================== -->
+      <!-- ======================================================
+           LUTARA LOGO ANIMATION
+           ====================================================== -->
 
       <a-entity
         id="logoAnimation"
@@ -176,7 +178,7 @@
         <!-- ORANGE LEFT -->
         <a-image
           id="orangeLeft"
-          src="assets/orange_left.png"
+          src="orange_left.png"
           width="1.75"
           height="1"
           rotation="-90 0 0"
@@ -187,7 +189,7 @@
         <!-- ORANGE RIGHT -->
         <a-image
           id="orangeRight"
-          src="assets/orange_right.png"
+          src="orange_right.png"
           width="1.75"
           height="1"
           rotation="-90 0 0"
@@ -198,7 +200,7 @@
         <!-- BURGUNDY TOP -->
         <a-image
           id="burgundyTop"
-          src="assets/burgundy_top.png"
+          src="burgundy_top.png"
           width="1.75"
           height="1"
           rotation="-90 0 0"
@@ -209,7 +211,7 @@
         <!-- BURGUNDY BOTTOM -->
         <a-image
           id="burgundyBottom"
-          src="assets/burgundy_bottom.png"
+          src="burgundy_bottom.png"
           width="1.75"
           height="1"
           rotation="-90 0 0"
@@ -282,7 +284,7 @@
 
 
   /* ============================================================
-     STOP ALL MOTION
+     STOP MOTION
      ============================================================ */
 
   function clearMotion() {
@@ -317,7 +319,7 @@
 
 
   /* ============================================================
-     WAIT FUNCTION
+     WAIT
      ============================================================ */
 
   function wait(ms, token) {
@@ -338,11 +340,10 @@
 
 
   /* ============================================================
-     CIRCULAR SWEEP
+     SWEEP ANIMATION
      
-     The pieces physically move around the logo centre.
-     
-     They do NOT simply rotate in place.
+     The elements move around the centre rather than
+     simply rotating in place.
      ============================================================ */
 
   function sweepPair(
@@ -359,23 +360,17 @@
       const startTime =
         performance.now();
 
-
-      /* Distance from centre */
-
       const radiusA = 0.15;
-
       const radiusB = 0.15;
 
 
-      /* Smooth easing */
+      /* Smooth ease-out */
 
       const ease = t =>
         1 - Math.pow(1 - t, 3);
 
 
       function frame(now) {
-
-        /* Stop if marker disappeared */
 
         if (
           token !== animationToken
@@ -387,8 +382,6 @@
         }
 
 
-        /* Animation progress */
-
         let t =
           Math.min(
             (now - startTime) / duration,
@@ -398,8 +391,6 @@
 
         t = ease(t);
 
-
-        /* Convert degrees → radians */
 
         const radA =
           angleA *
@@ -414,11 +405,10 @@
           180;
 
 
-        /* Move piece A */
+        /* LEFT / FIRST ELEMENT */
 
         pieceA.setAttribute(
           'position',
-
           `
           ${Math.cos(radA) * radiusA}
           ${Math.sin(radA) * radiusA}
@@ -427,11 +417,10 @@
         );
 
 
-        /* Move piece B */
+        /* RIGHT / SECOND ELEMENT */
 
         pieceB.setAttribute(
           'position',
-
           `
           ${Math.cos(radB) * radiusB}
           ${Math.sin(radB) * radiusB}
@@ -439,8 +428,6 @@
           `
         );
 
-
-        /* Continue */
 
         if (t < 1) {
 
@@ -473,18 +460,23 @@
   /* ============================================================
      MAIN LOGO ANIMATION
      
-     Sequence:
-     
-     1. Card appears
-     2. Logo appears
-     3. Orange sweep
-     4. Orange returns
-     5. Burgundy sweep
-     6. Burgundy returns
-     7. Repeat
-     8. Repeat
-     9. Repeat
-     10. Final logo
+     CARD
+       ↓
+     LOGO
+       ↓
+     ORANGE
+       ↓
+     BURGUNDY
+       ↓
+     ORANGE
+       ↓
+     BURGUNDY
+       ↓
+     ORANGE
+       ↓
+     BURGUNDY
+       ↓
+     FINAL LOGO
      ============================================================ */
 
   async function playLogoAnimation() {
@@ -495,14 +487,11 @@
       animationToken;
 
 
-    /* Start clean */
-
     resetPieces();
 
 
     /* ----------------------------------------------------------
-       STEP 1
-       Let the original card appear first.
+       CARD APPEARS FIRST
        ---------------------------------------------------------- */
 
     await wait(
@@ -517,8 +506,7 @@
 
 
     /* ----------------------------------------------------------
-       STEP 2
-       Reveal logo pieces.
+       LOGO APPEARS
        ---------------------------------------------------------- */
 
     logo.setAttribute(
@@ -527,7 +515,7 @@
     );
 
 
-    /* Let complete logo sit */
+    /* Hold complete logo */
 
     await wait(
       650,
@@ -541,7 +529,7 @@
 
 
     /* ----------------------------------------------------------
-       THREE ROUNDS
+       3 ROUNDS
        ---------------------------------------------------------- */
 
     for (
@@ -552,10 +540,7 @@
 
 
       /* ========================================================
-         ORANGE MOTIFS
-         
-         Left  → clockwise
-         Right → anticlockwise
+         ORANGE SWEEP
          ======================================================== */
 
       if (
@@ -570,7 +555,7 @@
       ) return;
 
 
-      /* Return orange */
+      /* ORANGE RETURNS */
 
       if (
         !(await sweepPair(
@@ -596,10 +581,7 @@
 
 
       /* ========================================================
-         BURGUNDY MOTIFS
-         
-         Top    → clockwise
-         Bottom → anticlockwise
+         BURGUNDY SWEEP
          ======================================================== */
 
       if (
@@ -614,7 +596,7 @@
       ) return;
 
 
-      /* Return burgundy */
+      /* BURGUNDY RETURNS */
 
       if (
         !(await sweepPair(
@@ -642,8 +624,7 @@
 
 
     /* ============================================================
-       FINAL
-       Return everything exactly to original position.
+       FINAL RESET
        ============================================================ */
 
     resetPieces();
@@ -662,7 +643,6 @@
       discoverButton.style.display =
         'block';
 
-
       playLogoAnimation();
 
     }
@@ -679,19 +659,15 @@
 
       animationToken++;
 
-
       logo.setAttribute(
         'visible',
         false
       );
 
-
       resetPieces();
-
 
       discoverButton.style.display =
         'none';
-
 
       infoPanel.style.display =
         'none';
@@ -701,7 +677,7 @@
 
 
   /* ============================================================
-     DISCOVER BUTTON
+     DISCOVER
      ============================================================ */
 
   discoverButton.addEventListener(
@@ -716,7 +692,7 @@
 
 
   /* ============================================================
-     CLOSE BUTTON
+     CLOSE
      ============================================================ */
 
   closeButton.addEventListener(
