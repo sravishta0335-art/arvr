@@ -1,41 +1,735 @@
 <!doctype html>
 <html>
-    <head>
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-    </head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <body style="margin: 0; overflow: hidden;">
-        <a-scene
-            vr-mode-ui="enabled: false;"
-            loading-screen="enabled: false;"
-            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-            id="scene"
-            embedded
-            gesture-detector
-        >
-            <a-marker
-                id="animated-marker"
-                type="pattern"
-                preset="custom"
-                url="marker.patt"
-                raycaster="objects: .clickable"
-                emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
-            >
-                <a-image
-                    src="asset.png"
-                    scale="1 1 1"
-                    class="clickable"
-                    rotation="-90 0 0"
-                    gesture-handler
-                ></a-image>
-            </a-marker>
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
 
-            <a-entity camera></a-entity>
-        </a-scene>
-    </body>
+  <!-- AR.js -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <!-- Gesture support -->
+  <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+
+  <style>
+    #discoverButton {
+      display: none;
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      z-index: 9999;
+
+      padding: 14px 28px;
+      border: 0;
+      border-radius: 24px;
+
+      background: #ffffff;
+      color: #222222;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    }
+
+    #infoPanel {
+      display: none;
+
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      z-index: 10000;
+
+      width: min(82vw, 360px);
+      padding: 24px;
+
+      border-radius: 18px;
+
+      background: rgba(255,255,255,.96);
+      color: #222222;
+
+      font-family: Arial, sans-serif;
+      text-align: center;
+
+      box-shadow: 0 8px 30px rgba(0,0,0,.3);
+    }
+
+    #infoPanel h2 {
+      margin: 0 0 8px;
+    }
+
+    #infoPanel p {
+      line-height: 1.5;
+      margin: 8px 0;
+    }
+
+    #closeButton {
+      margin-top: 12px;
+      padding: 10px 20px;
+
+      border: 0;
+      border-radius: 18px;
+
+      background: #222222;
+      color: #ffffff;
+
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+
+<body style="margin:0; overflow:hidden;">
+
+  <!-- Discover button -->
+  <button id="discoverButton">
+    DISCOVER LUTARA
+  </button>
+
+
+  <!-- Information panel -->
+  <div id="infoPanel">
+
+    <h2>LUTARA</h2>
+
+    <p>
+      <strong>Banjara Textile</strong>
+    </p>
+
+    <p>
+      Traditional Banjara textile craft,
+      brought into a contemporary visual experience.
+    </p>
+
+    <p>
+      <strong>Explore:</strong>
+      Embroidery • Textiles • Craft
+    </p>
+
+    <p>
+      <strong>Let's connect & collaborate.</strong>
+    </p>
+
+    <button id="closeButton">
+      CLOSE
+    </button>
+
+  </div>
+
+
+  <!-- AR SCENE -->
+  <a-scene
+    vr-mode-ui="enabled:false;"
+    loading-screen="enabled:false;"
+    arjs="trackingMethod:best; sourceType:webcam; debugUIEnabled:false;"
+    id="scene"
+    embedded
+    gesture-detector
+  >
+
+    <!-- CUSTOM AR MARKER -->
+    <a-marker
+      id="markerA"
+      type="pattern"
+      preset="custom"
+      url="assets/marker.patt"
+      raycaster="objects:.clickable"
+      emitevents="true"
+      cursor="fuse:false; rayOrigin:mouse;"
+    >
+
+      <!-- =====================================================
+           1. ORIGINAL VISITING CARD
+           This appears first.
+           ===================================================== -->
+
+      <a-image
+        id="cardArtwork"
+        src="assets/asset.png"
+        width="1.75"
+        height="1"
+        class="clickable"
+        rotation="-90 0 0"
+        gesture-handler>
+      </a-image>
+
+
+      <!-- =====================================================
+           2. LOGO ANIMATION
+           Transparent logo pieces are placed over the
+           original Lutara logo.
+           ===================================================== -->
+
+      <a-entity
+        id="logoAnimation"
+        visible="false"
+        position="0.81 -0.03 0.012"
+        scale="1.25 1.25 1"
+      >
+
+        <!-- ORANGE LEFT -->
+        <a-image
+          id="orangeLeft"
+          src="assets/orange_left.png"
+          width="1.75"
+          height="1"
+          rotation="-90 0 0"
+          material="transparent:true; alphaTest:0.01;">
+        </a-image>
+
+
+        <!-- ORANGE RIGHT -->
+        <a-image
+          id="orangeRight"
+          src="assets/orange_right.png"
+          width="1.75"
+          height="1"
+          rotation="-90 0 0"
+          material="transparent:true; alphaTest:0.01;">
+        </a-image>
+
+
+        <!-- BURGUNDY TOP -->
+        <a-image
+          id="burgundyTop"
+          src="assets/burgundy_top.png"
+          width="1.75"
+          height="1"
+          rotation="-90 0 0"
+          material="transparent:true; alphaTest:0.01;">
+        </a-image>
+
+
+        <!-- BURGUNDY BOTTOM -->
+        <a-image
+          id="burgundyBottom"
+          src="assets/burgundy_bottom.png"
+          width="1.75"
+          height="1"
+          rotation="-90 0 0"
+          material="transparent:true; alphaTest:0.01;">
+        </a-image>
+
+      </a-entity>
+
+    </a-marker>
+
+
+    <!-- CAMERA -->
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+
+<script>
+
+  /* ============================================================
+     ELEMENTS
+     ============================================================ */
+
+  const marker =
+    document.getElementById('markerA');
+
+  const logo =
+    document.getElementById('logoAnimation');
+
+  const discoverButton =
+    document.getElementById('discoverButton');
+
+  const infoPanel =
+    document.getElementById('infoPanel');
+
+  const closeButton =
+    document.getElementById('closeButton');
+
+
+  /* Logo pieces */
+
+  const orangeLeft =
+    document.getElementById('orangeLeft');
+
+  const orangeRight =
+    document.getElementById('orangeRight');
+
+  const burgundyTop =
+    document.getElementById('burgundyTop');
+
+  const burgundyBottom =
+    document.getElementById('burgundyBottom');
+
+
+  const pieces = [
+    orangeLeft,
+    orangeRight,
+    burgundyTop,
+    burgundyBottom
+  ];
+
+
+  /* ============================================================
+     ANIMATION CONTROL
+     ============================================================ */
+
+  let animationToken = 0;
+
+  let rafIds = [];
+
+
+  /* ============================================================
+     STOP ALL MOTION
+     ============================================================ */
+
+  function clearMotion() {
+
+    rafIds.forEach(
+      cancelAnimationFrame
+    );
+
+    rafIds = [];
+
+  }
+
+
+  /* ============================================================
+     RESET LOGO
+     ============================================================ */
+
+  function resetPieces() {
+
+    clearMotion();
+
+    pieces.forEach(piece => {
+
+      piece.setAttribute(
+        'position',
+        '0 0 0'
+      );
+
+    });
+
+  }
+
+
+  /* ============================================================
+     WAIT FUNCTION
+     ============================================================ */
+
+  function wait(ms, token) {
+
+    return new Promise(resolve => {
+
+      setTimeout(() => {
+
+        resolve(
+          token === animationToken
+        );
+
+      }, ms);
+
+    });
+
+  }
+
+
+  /* ============================================================
+     CIRCULAR SWEEP
+     
+     The pieces physically move around the logo centre.
+     
+     They do NOT simply rotate in place.
+     ============================================================ */
+
+  function sweepPair(
+    pieceA,
+    pieceB,
+    angleA,
+    angleB,
+    duration,
+    token
+  ) {
+
+    return new Promise(resolve => {
+
+      const startTime =
+        performance.now();
+
+
+      /* Distance from centre */
+
+      const radiusA = 0.15;
+
+      const radiusB = 0.15;
+
+
+      /* Smooth easing */
+
+      const ease = t =>
+        1 - Math.pow(1 - t, 3);
+
+
+      function frame(now) {
+
+        /* Stop if marker disappeared */
+
+        if (
+          token !== animationToken
+        ) {
+
+          resolve(false);
+          return;
+
+        }
+
+
+        /* Animation progress */
+
+        let t =
+          Math.min(
+            (now - startTime) / duration,
+            1
+          );
+
+
+        t = ease(t);
+
+
+        /* Convert degrees → radians */
+
+        const radA =
+          angleA *
+          t *
+          Math.PI /
+          180;
+
+        const radB =
+          angleB *
+          t *
+          Math.PI /
+          180;
+
+
+        /* Move piece A */
+
+        pieceA.setAttribute(
+          'position',
+
+          `
+          ${Math.cos(radA) * radiusA}
+          ${Math.sin(radA) * radiusA}
+          0
+          `
+        );
+
+
+        /* Move piece B */
+
+        pieceB.setAttribute(
+          'position',
+
+          `
+          ${Math.cos(radB) * radiusB}
+          ${Math.sin(radB) * radiusB}
+          0
+          `
+        );
+
+
+        /* Continue */
+
+        if (t < 1) {
+
+          const id =
+            requestAnimationFrame(frame);
+
+          rafIds.push(id);
+
+        }
+
+        else {
+
+          resolve(true);
+
+        }
+
+      }
+
+
+      const id =
+        requestAnimationFrame(frame);
+
+      rafIds.push(id);
+
+    });
+
+  }
+
+
+  /* ============================================================
+     MAIN LOGO ANIMATION
+     
+     Sequence:
+     
+     1. Card appears
+     2. Logo appears
+     3. Orange sweep
+     4. Orange returns
+     5. Burgundy sweep
+     6. Burgundy returns
+     7. Repeat
+     8. Repeat
+     9. Repeat
+     10. Final logo
+     ============================================================ */
+
+  async function playLogoAnimation() {
+
+    animationToken++;
+
+    const token =
+      animationToken;
+
+
+    /* Start clean */
+
+    resetPieces();
+
+
+    /* ----------------------------------------------------------
+       STEP 1
+       Let the original card appear first.
+       ---------------------------------------------------------- */
+
+    await wait(
+      900,
+      token
+    );
+
+
+    if (
+      token !== animationToken
+    ) return;
+
+
+    /* ----------------------------------------------------------
+       STEP 2
+       Reveal logo pieces.
+       ---------------------------------------------------------- */
+
+    logo.setAttribute(
+      'visible',
+      true
+    );
+
+
+    /* Let complete logo sit */
+
+    await wait(
+      650,
+      token
+    );
+
+
+    if (
+      token !== animationToken
+    ) return;
+
+
+    /* ----------------------------------------------------------
+       THREE ROUNDS
+       ---------------------------------------------------------- */
+
+    for (
+      let round = 0;
+      round < 3;
+      round++
+    ) {
+
+
+      /* ========================================================
+         ORANGE MOTIFS
+         
+         Left  → clockwise
+         Right → anticlockwise
+         ======================================================== */
+
+      if (
+        !(await sweepPair(
+          orangeLeft,
+          orangeRight,
+          -70,
+          70,
+          650,
+          token
+        ))
+      ) return;
+
+
+      /* Return orange */
+
+      if (
+        !(await sweepPair(
+          orangeLeft,
+          orangeRight,
+          70,
+          -70,
+          650,
+          token
+        ))
+      ) return;
+
+
+      await wait(
+        120,
+        token
+      );
+
+
+      if (
+        token !== animationToken
+      ) return;
+
+
+      /* ========================================================
+         BURGUNDY MOTIFS
+         
+         Top    → clockwise
+         Bottom → anticlockwise
+         ======================================================== */
+
+      if (
+        !(await sweepPair(
+          burgundyTop,
+          burgundyBottom,
+          70,
+          -70,
+          650,
+          token
+        ))
+      ) return;
+
+
+      /* Return burgundy */
+
+      if (
+        !(await sweepPair(
+          burgundyTop,
+          burgundyBottom,
+          -70,
+          70,
+          650,
+          token
+        ))
+      ) return;
+
+
+      await wait(
+        180,
+        token
+      );
+
+
+      if (
+        token !== animationToken
+      ) return;
+
+    }
+
+
+    /* ============================================================
+       FINAL
+       Return everything exactly to original position.
+       ============================================================ */
+
+    resetPieces();
+
+  }
+
+
+  /* ============================================================
+     MARKER FOUND
+     ============================================================ */
+
+  marker.addEventListener(
+    'markerFound',
+    () => {
+
+      discoverButton.style.display =
+        'block';
+
+
+      playLogoAnimation();
+
+    }
+  );
+
+
+  /* ============================================================
+     MARKER LOST
+     ============================================================ */
+
+  marker.addEventListener(
+    'markerLost',
+    () => {
+
+      animationToken++;
+
+
+      logo.setAttribute(
+        'visible',
+        false
+      );
+
+
+      resetPieces();
+
+
+      discoverButton.style.display =
+        'none';
+
+
+      infoPanel.style.display =
+        'none';
+
+    }
+  );
+
+
+  /* ============================================================
+     DISCOVER BUTTON
+     ============================================================ */
+
+  discoverButton.addEventListener(
+    'click',
+    () => {
+
+      infoPanel.style.display =
+        'block';
+
+    }
+  );
+
+
+  /* ============================================================
+     CLOSE BUTTON
+     ============================================================ */
+
+  closeButton.addEventListener(
+    'click',
+    () => {
+
+      infoPanel.style.display =
+        'none';
+
+    }
+  );
+
+</script>
+
+</body>
 </html>
