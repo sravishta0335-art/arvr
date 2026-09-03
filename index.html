@@ -1,711 +1,412 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>LUTARA — MindAR</title>
 
   <!-- A-Frame -->
-  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-  <!-- AR.js -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
-  <!-- Gesture support -->
-  <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+  <!-- MindAR Image Tracking -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    #discoverButton {
-      display: none;
-      position: fixed;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%);
-      z-index: 9999;
-
-      padding: 14px 28px;
-      border: 0;
-      border-radius: 24px;
-
-      background: #ffffff;
-      color: #222222;
-
-      font-size: 16px;
-      font-weight: bold;
-
-      box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
     }
 
-    #infoPanel {
-      display: none;
-
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-
-      z-index: 10000;
-
-      width: min(82vw, 360px);
-      padding: 24px;
-
-      border-radius: 18px;
-
-      background: rgba(255,255,255,.96);
-      color: #222222;
-
-      font-family: Arial, sans-serif;
-      text-align: center;
-
-      box-shadow: 0 8px 30px rgba(0,0,0,.3);
+    a-scene {
+      width: 100%;
+      height: 100%;
     }
 
-    #infoPanel h2 {
-      margin: 0 0 8px;
-    }
-
-    #infoPanel p {
-      line-height: 1.5;
-      margin: 8px 0;
-    }
-
-    #closeButton {
-      margin-top: 12px;
-      padding: 10px 20px;
-
-      border: 0;
-      border-radius: 18px;
-
-      background: #222222;
-      color: #ffffff;
-
-      font-size: 14px;
-    }
+    /* MindAR's scanning/loading UI is retained.
+       There is deliberately no old LUTARA info panel/button. */
   </style>
 </head>
 
+<body>
 
-<body style="margin:0; overflow:hidden;">
+<a-scene
+  mindar-image="
+    imageTargetSrc: ./LUTARA.mind;
+    autoStart: true;
+    uiLoading: yes;
+    uiScanning: yes;
+    uiError: yes;
+  "
+  color-space="sRGB"
+  renderer="
+    colorManagement: true;
+    physicallyCorrectLights: true;
+    antialias: true;
+  "
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  embedded>
 
-  <!-- Discover button -->
-  <button id="discoverButton">
-    DISCOVER LUTARA
-  </button>
+  <a-assets>
+    <!-- Your Blender GLB -->
+    <a-asset-item id="lutaraLogo" src="./lutara_logo.glb"></a-asset-item>
+  </a-assets>
 
+  <!-- =========================================================
+       TARGET 0 = THE LUTARA CARD
+       Everything below lives on the detected card.
+       ========================================================= -->
+  <a-entity id="target" mindar-image-target="targetIndex: 0">
 
-  <!-- Information panel -->
-  <div id="infoPanel">
+    <!--
+      PORTAL / GEM CORE
+      This sits underneath the logo and gives the impression
+      that the logo is emerging from a glowing source.
+    -->
+    <a-entity id="portal">
 
-    <h2>LUTARA</h2>
+      <!-- Core gem -->
+      <a-octahedron
+        id="gemCore"
+        position="0 0 -0.025"
+        radius="0.16"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #F2A65A;
+          emissive: #F2A65A;
+          emissiveIntensity: 2.5;
+          opacity: 0.82;
+          transparent: true;
+          roughness: 0.15;
+          metalness: 0.35;
+        ">
+      </a-octahedron>
 
-    <p>
-      <strong>Banjara Textile</strong>
-    </p>
+      <!-- Inner glow -->
+      <a-cylinder
+        id="glowInner"
+        position="0 0 -0.045"
+        radius="0.20"
+        height="0.012"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #FFD38A;
+          emissive: #FF9B45;
+          emissiveIntensity: 3;
+          opacity: 0.42;
+          transparent: true;
+          side: double;
+        ">
+      </a-cylinder>
 
-    <p>
-      Traditional Banjara textile craft,
-      brought into a contemporary visual experience.
-    </p>
+      <!-- Portal rings -->
+      <a-ring
+        id="ring1"
+        position="0 0 -0.052"
+        rotation="0 0 0"
+        radius-inner="0.17"
+        radius-outer="0.21"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #FFD38A;
+          emissive: #FF9B45;
+          emissiveIntensity: 3;
+          opacity: 0.65;
+          transparent: true;
+          side: double;
+        ">
+      </a-ring>
 
-    <p>
-      <strong>Explore:</strong>
-      Embroidery • Textiles • Craft
-    </p>
+      <a-ring
+        id="ring2"
+        position="0 0 -0.058"
+        rotation="0 0 0"
+        radius-inner="0.24"
+        radius-outer="0.27"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #F3B56B;
+          emissive: #FF7A45;
+          emissiveIntensity: 2.2;
+          opacity: 0.35;
+          transparent: true;
+          side: double;
+        ">
+      </a-ring>
 
-    <p>
-      <strong>Let's connect & collaborate.</strong>
-    </p>
+      <a-ring
+        id="ring3"
+        position="0 0 -0.064"
+        rotation="0 0 0"
+        radius-inner="0.30"
+        radius-outer="0.315"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #FFE1B0;
+          emissive: #FF8B45;
+          emissiveIntensity: 1.8;
+          opacity: 0.22;
+          transparent: true;
+          side: double;
+        ">
+      </a-ring>
 
-    <button id="closeButton">
-      CLOSE
-    </button>
+    </a-entity>
 
-  </div>
+    <!-- Soft light from beneath the logo -->
+    <a-light
+      id="portalLight"
+      type="point"
+      position="0 0 0.02"
+      intensity="0"
+      distance="1.5"
+      decay="2"
+      color="#FFD08A">
+    </a-light>
 
-
-  <!-- ==========================================================
-       AR SCENE
-       ========================================================== -->
-
-  <a-scene
-    vr-mode-ui="enabled:false;"
-    loading-screen="enabled:false;"
-    arjs="trackingMethod:best; sourceType:webcam; debugUIEnabled:false;"
-    id="scene"
-    embedded
-    gesture-detector
-  >
-
-    <!-- CUSTOM MARKER -->
-    <!-- marker.patt is in the SAME folder as index.html -->
-
-    <a-marker
-      id="markerA"
-      type="pattern"
-      preset="custom"
-      url="marker.patt"
-      raycaster="objects:.clickable"
-      emitevents="true"
-      cursor="fuse:false; rayOrigin:mouse;"
-    >
-
-      <!-- ======================================================
-           ORIGINAL VISITING CARD
-           ====================================================== -->
-
-      <a-image
-        id="cardArtwork"
-        src="asset.png"
-        width="1.75"
-        height="1"
-        class="clickable"
-        rotation="-90 0 0"
-        gesture-handler>
-      </a-image>
-
-
-      <!-- ======================================================
-           LUTARA LOGO ANIMATION
-           ====================================================== -->
+    <!-- =========================================================
+         THE ENTIRE 3D LOGO
+         One object = one diamond-shaped floating emblem.
+         The parent rotates around its CENTER AXIS.
+         ========================================================= -->
+    <a-entity
+      id="logoRig"
+      position="0 0 0.08"
+      rotation="0 0 0"
+      scale="0.01 0.01 0.01">
 
       <a-entity
-        id="logoAnimation"
-        visible="false"
-        position="0.81 -0.03 0.012"
-        scale="1.25 1.25 1"
-      >
-
-        <!-- ORANGE LEFT -->
-        <a-image
-          id="orangeLeft"
-          src="orange_left.png"
-          width="1.75"
-          height="1"
-          rotation="-90 0 0"
-          material="transparent:true; alphaTest:0.01;">
-        </a-image>
-
-
-        <!-- ORANGE RIGHT -->
-        <a-image
-          id="orangeRight"
-          src="orange_right.png"
-          width="1.75"
-          height="1"
-          rotation="-90 0 0"
-          material="transparent:true; alphaTest:0.01;">
-        </a-image>
-
-
-        <!-- BURGUNDY TOP -->
-        <a-image
-          id="burgundyTop"
-          src="burgundy_top.png"
-          width="1.75"
-          height="1"
-          rotation="-90 0 0"
-          material="transparent:true; alphaTest:0.01;">
-        </a-image>
-
-
-        <!-- BURGUNDY BOTTOM -->
-        <a-image
-          id="burgundyBottom"
-          src="burgundy_bottom.png"
-          width="1.75"
-          height="1"
-          rotation="-90 0 0"
-          material="transparent:true; alphaTest:0.01;">
-        </a-image>
-
+        id="logo"
+        gltf-model="#lutaraLogo"
+        position="0 0 0"
+        rotation="0 0 0"
+        scale="1 1 1">
       </a-entity>
 
-    </a-marker>
+    </a-entity>
 
+    <!-- Tiny particles/sparks around the portal -->
+    <a-sphere
+      id="spark1"
+      position="-0.22 0.08 0"
+      radius="0.012"
+      scale="0 0 0"
+      material="color:#FFD38A; emissive:#FF9B45; emissiveIntensity:3">
+    </a-sphere>
 
-    <!-- CAMERA -->
-    <a-entity camera></a-entity>
+    <a-sphere
+      id="spark2"
+      position="0.23 -0.10 0"
+      radius="0.009"
+      scale="0 0 0"
+      material="color:#FFE0A8; emissive:#FF9B45; emissiveIntensity:3">
+    </a-sphere>
 
-  </a-scene>
+    <a-sphere
+      id="spark3"
+      position="0.10 0.23 0"
+      radius="0.008"
+      scale="0 0 0"
+      material="color:#FFD38A; emissive:#FF9B45; emissiveIntensity:3">
+    </a-sphere>
+
+  </a-entity>
+
+  <!-- Camera -->
+  <a-camera
+    position="0 0 0"
+    look-controls="enabled: false">
+  </a-camera>
+
+</a-scene>
 
 
 <script>
+/*
+  LUTARA PORTAL ANIMATION
 
-  /* ============================================================
-     ELEMENTS
-     ============================================================ */
+  Sequence:
+  1. Card is detected.
+  2. The gem + portal rings appear underneath.
+  3. The complete 3D diamond logo shoots upward/outward from the center.
+  4. It overshoots slightly, settles, then continuously floats.
+  5. The whole logo rotates around its CENTER Y axis.
+  6. The portal continues a subtle pulse underneath.
+*/
 
-  const marker =
-    document.getElementById('markerA');
+const target = document.querySelector('#target');
 
-  const logo =
-    document.getElementById('logoAnimation');
+const logoRig = document.querySelector('#logoRig');
+const portal = document.querySelector('#portal');
+const gemCore = document.querySelector('#gemCore');
+const glowInner = document.querySelector('#glowInner');
 
-  const discoverButton =
-    document.getElementById('discoverButton');
+const ring1 = document.querySelector('#ring1');
+const ring2 = document.querySelector('#ring2');
+const ring3 = document.querySelector('#ring3');
 
-  const infoPanel =
-    document.getElementById('infoPanel');
+const light = document.querySelector('#portalLight');
 
-  const closeButton =
-    document.getElementById('closeButton');
+const spark1 = document.querySelector('#spark1');
+const spark2 = document.querySelector('#spark2');
+const spark3 = document.querySelector('#spark3');
 
+let raf = null;
+let active = false;
+let startTime = 0;
 
-  /* Logo pieces */
+function setScale(el, s) {
+  el.object3D.scale.set(s, s, s);
+}
 
-  const orangeLeft =
-    document.getElementById('orangeLeft');
+function resetScene() {
+  active = false;
 
-  const orangeRight =
-    document.getElementById('orangeRight');
-
-  const burgundyTop =
-    document.getElementById('burgundyTop');
-
-  const burgundyBottom =
-    document.getElementById('burgundyBottom');
-
-
-  const pieces = [
-    orangeLeft,
-    orangeRight,
-    burgundyTop,
-    burgundyBottom
-  ];
-
-
-  /* ============================================================
-     ANIMATION CONTROL
-     ============================================================ */
-
-  let animationToken = 0;
-
-  let rafIds = [];
-
-
-  /* ============================================================
-     STOP MOTION
-     ============================================================ */
-
-  function clearMotion() {
-
-    rafIds.forEach(
-      cancelAnimationFrame
-    );
-
-    rafIds = [];
-
+  if (raf) {
+    cancelAnimationFrame(raf);
+    raf = null;
   }
 
+  logoRig.object3D.scale.set(0.01, 0.01, 0.01);
+  logoRig.object3D.position.set(0, 0, 0.08);
+  logoRig.object3D.rotation.set(0, 0, 0);
 
-  /* ============================================================
-     RESET LOGO
-     ============================================================ */
+  setScale(gemCore, 0.01);
+  setScale(glowInner, 0.01);
+  setScale(ring1, 0.01);
+  setScale(ring2, 0.01);
+  setScale(ring3, 0.01);
 
-  function resetPieces() {
+  setScale(spark1, 0);
+  setScale(spark2, 0);
+  setScale(spark3, 0);
 
-    clearMotion();
+  light.setAttribute('intensity', 0);
+}
 
-    pieces.forEach(piece => {
+function easeOutBack(t) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
 
-      piece.setAttribute(
-        'position',
-        '0 0 0'
-      );
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
 
-    });
+function easeInOutSine(t) {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+}
 
+function animate(now) {
+  if (!active) return;
+
+  const elapsed = now - startTime;
+
+  /* ---------------------------
+     0–900ms: PORTAL OPENS
+     --------------------------- */
+  const portalT = Math.min(elapsed / 900, 1);
+  const portalEase = easeOutCubic(portalT);
+
+  setScale(gemCore, 0.01 + 1.00 * portalEase);
+  setScale(glowInner, 0.01 + 1.00 * portalEase);
+  setScale(ring1, 0.01 + 1.00 * portalEase);
+  setScale(ring2, 0.01 + 1.00 * portalEase);
+  setScale(ring3, 0.01 + 1.00 * portalEase);
+
+  light.setAttribute('intensity', 1.5 * portalEase);
+
+  /* ---------------------------
+     180–1150ms: LOGO POPS OUT
+     --------------------------- */
+  const logoT = Math.min(Math.max((elapsed - 180) / 970, 0), 1);
+  const logoEase = easeOutBack(logoT);
+
+  const scale = 0.01 + 0.43 * logoEase;
+  logoRig.object3D.scale.set(scale, scale, scale);
+
+  /*
+    Starts inside the gem, then comes toward the viewer.
+    Y also rises slightly, making it feel like it is emerging.
+  */
+  const z = 0.02 + 0.23 * easeOutCubic(logoT);
+  const y = -0.03 + 0.09 * easeOutCubic(logoT);
+
+  logoRig.object3D.position.set(0, y, z);
+
+  /* ---------------------------
+     1150ms+: FLOAT + SPIN
+     --------------------------- */
+  if (elapsed > 1150) {
+    const t = (elapsed - 1150) / 1000;
+
+    const floatY = Math.sin(t * Math.PI * 1.15) * 0.045;
+    const floatZ = Math.cos(t * Math.PI * 0.7) * 0.012;
+
+    logoRig.object3D.position.y = 0.06 + floatY;
+    logoRig.object3D.position.z = 0.25 + floatZ;
+
+    /*
+      Entire diamond-shaped logo spins around its CENTER axis.
+      One complete revolution every ~7 seconds.
+    */
+    logoRig.object3D.rotation.y = t * (Math.PI * 2 / 7);
+
+    /*
+      Tiny tilt makes the floating object feel less mechanical.
+    */
+    logoRig.object3D.rotation.x =
+      Math.sin(t * Math.PI * 0.8) * 0.035;
+
+    logoRig.object3D.rotation.z =
+      Math.cos(t * Math.PI * 0.55) * 0.025;
   }
 
+  /* ---------------------------
+     PORTAL BREATHING / GLOW
+     --------------------------- */
+  const pulse = 1 + Math.sin(elapsed / 350) * 0.08;
 
-  /* ============================================================
-     WAIT
-     ============================================================ */
+  ring1.object3D.scale.set(pulse, pulse, pulse);
+  ring2.object3D.scale.set(pulse * 1.05, pulse * 1.05, pulse * 1.05);
+  ring3.object3D.scale.set(pulse * 1.10, pulse * 1.10, pulse * 1.10);
 
-  function wait(ms, token) {
+  gemCore.object3D.rotation.y = elapsed / 1200;
+  gemCore.object3D.rotation.x = elapsed / 1700;
 
-    return new Promise(resolve => {
+  /* Sparks */
+  const sparkT = Math.min(Math.max((elapsed - 250) / 800, 0), 1);
+  const sparkS = easeOutCubic(sparkT);
 
-      setTimeout(() => {
+  setScale(spark1, sparkS);
+  setScale(spark2, sparkS);
+  setScale(spark3, sparkS);
 
-        resolve(
-          token === animationToken
-        );
+  raf = requestAnimationFrame(animate);
+}
 
-      }, ms);
+target.addEventListener('targetFound', () => {
+  resetScene();
 
-    });
+  active = true;
+  startTime = performance.now();
 
-  }
+  requestAnimationFrame(animate);
+});
 
+target.addEventListener('targetLost', () => {
+  resetScene();
+});
 
-  /* ============================================================
-     SWEEP ANIMATION
-     
-     The elements move around the centre rather than
-     simply rotating in place.
-     ============================================================ */
-
-  function sweepPair(
-    pieceA,
-    pieceB,
-    angleA,
-    angleB,
-    duration,
-    token
-  ) {
-
-    return new Promise(resolve => {
-
-      const startTime =
-        performance.now();
-
-      const radiusA = 0.15;
-      const radiusB = 0.15;
-
-
-      /* Smooth ease-out */
-
-      const ease = t =>
-        1 - Math.pow(1 - t, 3);
-
-
-      function frame(now) {
-
-        if (
-          token !== animationToken
-        ) {
-
-          resolve(false);
-          return;
-
-        }
-
-
-        let t =
-          Math.min(
-            (now - startTime) / duration,
-            1
-          );
-
-
-        t = ease(t);
-
-
-        const radA =
-          angleA *
-          t *
-          Math.PI /
-          180;
-
-        const radB =
-          angleB *
-          t *
-          Math.PI /
-          180;
-
-
-        /* LEFT / FIRST ELEMENT */
-
-        pieceA.setAttribute(
-          'position',
-          `
-          ${Math.cos(radA) * radiusA}
-          ${Math.sin(radA) * radiusA}
-          0
-          `
-        );
-
-
-        /* RIGHT / SECOND ELEMENT */
-
-        pieceB.setAttribute(
-          'position',
-          `
-          ${Math.cos(radB) * radiusB}
-          ${Math.sin(radB) * radiusB}
-          0
-          `
-        );
-
-
-        if (t < 1) {
-
-          const id =
-            requestAnimationFrame(frame);
-
-          rafIds.push(id);
-
-        }
-
-        else {
-
-          resolve(true);
-
-        }
-
-      }
-
-
-      const id =
-        requestAnimationFrame(frame);
-
-      rafIds.push(id);
-
-    });
-
-  }
-
-
-  /* ============================================================
-     MAIN LOGO ANIMATION
-     
-     CARD
-       ↓
-     LOGO
-       ↓
-     ORANGE
-       ↓
-     BURGUNDY
-       ↓
-     ORANGE
-       ↓
-     BURGUNDY
-       ↓
-     ORANGE
-       ↓
-     BURGUNDY
-       ↓
-     FINAL LOGO
-     ============================================================ */
-
-  async function playLogoAnimation() {
-
-    animationToken++;
-
-    const token =
-      animationToken;
-
-
-    resetPieces();
-
-
-    /* ----------------------------------------------------------
-       CARD APPEARS FIRST
-       ---------------------------------------------------------- */
-
-    await wait(
-      900,
-      token
-    );
-
-
-    if (
-      token !== animationToken
-    ) return;
-
-
-    /* ----------------------------------------------------------
-       LOGO APPEARS
-       ---------------------------------------------------------- */
-
-    logo.setAttribute(
-      'visible',
-      true
-    );
-
-
-    /* Hold complete logo */
-
-    await wait(
-      650,
-      token
-    );
-
-
-    if (
-      token !== animationToken
-    ) return;
-
-
-    /* ----------------------------------------------------------
-       3 ROUNDS
-       ---------------------------------------------------------- */
-
-    for (
-      let round = 0;
-      round < 3;
-      round++
-    ) {
-
-
-      /* ========================================================
-         ORANGE SWEEP
-         ======================================================== */
-
-      if (
-        !(await sweepPair(
-          orangeLeft,
-          orangeRight,
-          -70,
-          70,
-          650,
-          token
-        ))
-      ) return;
-
-
-      /* ORANGE RETURNS */
-
-      if (
-        !(await sweepPair(
-          orangeLeft,
-          orangeRight,
-          70,
-          -70,
-          650,
-          token
-        ))
-      ) return;
-
-
-      await wait(
-        120,
-        token
-      );
-
-
-      if (
-        token !== animationToken
-      ) return;
-
-
-      /* ========================================================
-         BURGUNDY SWEEP
-         ======================================================== */
-
-      if (
-        !(await sweepPair(
-          burgundyTop,
-          burgundyBottom,
-          70,
-          -70,
-          650,
-          token
-        ))
-      ) return;
-
-
-      /* BURGUNDY RETURNS */
-
-      if (
-        !(await sweepPair(
-          burgundyTop,
-          burgundyBottom,
-          -70,
-          70,
-          650,
-          token
-        ))
-      ) return;
-
-
-      await wait(
-        180,
-        token
-      );
-
-
-      if (
-        token !== animationToken
-      ) return;
-
-    }
-
-
-    /* ============================================================
-       FINAL RESET
-       ============================================================ */
-
-    resetPieces();
-
-  }
-
-
-  /* ============================================================
-     MARKER FOUND
-     ============================================================ */
-
-  marker.addEventListener(
-    'markerFound',
-    () => {
-
-      discoverButton.style.display =
-        'block';
-
-      playLogoAnimation();
-
-    }
-  );
-
-
-  /* ============================================================
-     MARKER LOST
-     ============================================================ */
-
-  marker.addEventListener(
-    'markerLost',
-    () => {
-
-      animationToken++;
-
-      logo.setAttribute(
-        'visible',
-        false
-      );
-
-      resetPieces();
-
-      discoverButton.style.display =
-        'none';
-
-      infoPanel.style.display =
-        'none';
-
-    }
-  );
-
-
-  /* ============================================================
-     DISCOVER
-     ============================================================ */
-
-  discoverButton.addEventListener(
-    'click',
-    () => {
-
-      infoPanel.style.display =
-        'block';
-
-    }
-  );
-
-
-  /* ============================================================
-     CLOSE
-     ============================================================ */
-
-  closeButton.addEventListener(
-    'click',
-    () => {
-
-      infoPanel.style.display =
-        'none';
-
-    }
-  );
-
+/* Start hidden */
+resetScene();
 </script>
 
 </body>
 </html>
+    
