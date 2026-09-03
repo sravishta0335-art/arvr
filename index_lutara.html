@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>LUTARA — MindAR</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- MindAR Image Tracking -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    a-scene {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* MindAR's scanning/loading UI is retained.
+       There is deliberately no old LUTARA info panel/button. */
+  </style>
+</head>
+
+<body>
+
+<a-scene
+  mindar-image="
+    imageTargetSrc: ./LUTARA.mind;
+    autoStart: true;
+    uiLoading: yes;
+    uiScanning: yes;
+    uiError: yes;
+  "
+  color-space="sRGB"
+  renderer="
+    colorManagement: true;
+    physicallyCorrectLights: true;
+    antialias: true;
+  "
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  embedded>
+
+  <a-assets>
+    <!-- Your Blender GLB -->
+    <a-asset-item id="lutaraLogo" src="./lutara_logo.glb"></a-asset-item>
+  </a-assets>
+
+  <!-- =========================================================
+       TARGET 0 = THE LUTARA CARD
+       Everything below lives on the detected card.
+       ========================================================= -->
+  <a-entity id="target" mindar-image-target="targetIndex: 0">
+
+    <!--
+      PORTAL / GEM CORE
+      This sits underneath the logo and gives the impression
+      that the logo is emerging from a glowing source.
+    -->
+    <a-entity id="portal">
+
+      <!-- Core gem -->
+      <a-octahedron
+        id="gemCore"
+        position="0 0 -0.025"
+        radius="0.16"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #F2A65A;
+          emissive: #F2A65A;
+          emissiveIntensity: 2.5;
+          opacity: 0.82;
+          transparent: true;
+          roughness: 0.15;
+          metalness: 0.35;
+        ">
+      </a-octahedron>
+
+      <!-- Inner glow -->
+      <a-cylinder
+        id="glowInner"
+        position="0 0 -0.045"
+        radius="0.20"
+        height="0.012"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #FFD38A;
+          emissive: #FF9B45;
+          emissiveIntensity: 3;
+          opacity: 0.42;
+          transparent: true;
+          side: double;
+        ">
+      </a-cylinder>
+
+      <!-- Portal rings -->
+      <a-ring
+        id="ring1"
+        position="0 0 -0.052"
+        rotation="0 0 0"
+        radius-inner="0.17"
+        radius-outer="0.21"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #FFD38A;
+          emissive: #FF9B45;
+          emissiveIntensity: 3;
+          opacity: 0.65;
+          transparent: true;
+          side: double;
+        ">
+      </a-ring>
+
+      <a-ring
+        id="ring2"
+        position="0 0 -0.058"
+        rotation="0 0 0"
+        radius-inner="0.24"
+        radius-outer="0.27"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #F3B56B;
+          emissive: #FF7A45;
+          emissiveIntensity: 2.2;
+          opacity: 0.35;
+          transparent: true;
+          side: double;
+        ">
+      </a-ring>
+
+      <a-ring
+        id="ring3"
+        position="0 0 -0.064"
+        rotation="0 0 0"
+        radius-inner="0.30"
+        radius-outer="0.315"
+        scale="0.01 0.01 0.01"
+        material="
+          color: #FFE1B0;
+          emissive: #FF8B45;
+          emissiveIntensity: 1.8;
+          opacity: 0.22;
+          transparent: true;
+          side: double;
+        ">
+      </a-ring>
+
+    </a-entity>
+
+    <!-- Soft light from beneath the logo -->
+    <a-light
+      id="portalLight"
+      type="point"
+      position="0 0 0.02"
+      intensity="0"
+      distance="1.5"
+      decay="2"
+      color="#FFD08A">
+    </a-light>
+
+    <!-- =========================================================
+         THE ENTIRE 3D LOGO
+         One object = one diamond-shaped floating emblem.
+         The parent rotates around its CENTER AXIS.
+         ========================================================= -->
+    <a-entity
+      id="logoRig"
+      position="0 0 0.08"
+      rotation="0 0 0"
+      scale="0.01 0.01 0.01">
+
+      <a-entity
+        id="logo"
+        gltf-model="#lutaraLogo"
+        position="0 0 0"
+        rotation="0 0 0"
+        scale="1 1 1">
+      </a-entity>
+
+    </a-entity>
+
+    <!-- Tiny particles/sparks around the portal -->
+    <a-sphere
+      id="spark1"
+      position="-0.22 0.08 0"
+      radius="0.012"
+      scale="0 0 0"
+      material="color:#FFD38A; emissive:#FF9B45; emissiveIntensity:3">
+    </a-sphere>
+
+    <a-sphere
+      id="spark2"
+      position="0.23 -0.10 0"
+      radius="0.009"
+      scale="0 0 0"
+      material="color:#FFE0A8; emissive:#FF9B45; emissiveIntensity:3">
+    </a-sphere>
+
+    <a-sphere
+      id="spark3"
+      position="0.10 0.23 0"
+      radius="0.008"
+      scale="0 0 0"
+      material="color:#FFD38A; emissive:#FF9B45; emissiveIntensity:3">
+    </a-sphere>
+
+  </a-entity>
+
+  <!-- Camera -->
+  <a-camera
+    position="0 0 0"
+    look-controls="enabled: false">
+  </a-camera>
+
+</a-scene>
+
+
+<script>
+/*
+  LUTARA PORTAL ANIMATION
+
+  Sequence:
+  1. Card is detected.
+  2. The gem + portal rings appear underneath.
+  3. The complete 3D diamond logo shoots upward/outward from the center.
+  4. It overshoots slightly, settles, then continuously floats.
+  5. The whole logo rotates around its CENTER Y axis.
+  6. The portal continues a subtle pulse underneath.
+*/
+
+const target = document.querySelector('#target');
+
+const logoRig = document.querySelector('#logoRig');
+const portal = document.querySelector('#portal');
+const gemCore = document.querySelector('#gemCore');
+const glowInner = document.querySelector('#glowInner');
+
+const ring1 = document.querySelector('#ring1');
+const ring2 = document.querySelector('#ring2');
+const ring3 = document.querySelector('#ring3');
+
+const light = document.querySelector('#portalLight');
+
+const spark1 = document.querySelector('#spark1');
+const spark2 = document.querySelector('#spark2');
+const spark3 = document.querySelector('#spark3');
+
+let raf = null;
+let active = false;
+let startTime = 0;
+
+function setScale(el, s) {
+  el.object3D.scale.set(s, s, s);
+}
+
+function resetScene() {
+  active = false;
+
+  if (raf) {
+    cancelAnimationFrame(raf);
+    raf = null;
+  }
+
+  logoRig.object3D.scale.set(0.01, 0.01, 0.01);
+  logoRig.object3D.position.set(0, 0, 0.08);
+  logoRig.object3D.rotation.set(0, 0, 0);
+
+  setScale(gemCore, 0.01);
+  setScale(glowInner, 0.01);
+  setScale(ring1, 0.01);
+  setScale(ring2, 0.01);
+  setScale(ring3, 0.01);
+
+  setScale(spark1, 0);
+  setScale(spark2, 0);
+  setScale(spark3, 0);
+
+  light.setAttribute('intensity', 0);
+}
+
+function easeOutBack(t) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function easeInOutSine(t) {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+}
+
+function animate(now) {
+  if (!active) return;
+
+  const elapsed = now - startTime;
+
+  /* ---------------------------
+     0–900ms: PORTAL OPENS
+     --------------------------- */
+  const portalT = Math.min(elapsed / 900, 1);
+  const portalEase = easeOutCubic(portalT);
+
+  setScale(gemCore, 0.01 + 1.00 * portalEase);
+  setScale(glowInner, 0.01 + 1.00 * portalEase);
+  setScale(ring1, 0.01 + 1.00 * portalEase);
+  setScale(ring2, 0.01 + 1.00 * portalEase);
+  setScale(ring3, 0.01 + 1.00 * portalEase);
+
+  light.setAttribute('intensity', 1.5 * portalEase);
+
+  /* ---------------------------
+     180–1150ms: LOGO POPS OUT
+     --------------------------- */
+  const logoT = Math.min(Math.max((elapsed - 180) / 970, 0), 1);
+  const logoEase = easeOutBack(logoT);
+
+  const scale = 0.01 + 0.43 * logoEase;
+  logoRig.object3D.scale.set(scale, scale, scale);
+
+  /*
+    Starts inside the gem, then comes toward the viewer.
+    Y also rises slightly, making it feel like it is emerging.
+  */
+  const z = 0.02 + 0.23 * easeOutCubic(logoT);
+  const y = -0.03 + 0.09 * easeOutCubic(logoT);
+
+  logoRig.object3D.position.set(0, y, z);
+
+  /* ---------------------------
+     1150ms+: FLOAT + SPIN
+     --------------------------- */
+  if (elapsed > 1150) {
+    const t = (elapsed - 1150) / 1000;
+
+    const floatY = Math.sin(t * Math.PI * 1.15) * 0.045;
+    const floatZ = Math.cos(t * Math.PI * 0.7) * 0.012;
+
+    logoRig.object3D.position.y = 0.06 + floatY;
+    logoRig.object3D.position.z = 0.25 + floatZ;
+
+    /*
+      Entire diamond-shaped logo spins around its CENTER axis.
+      One complete revolution every ~7 seconds.
+    */
+    logoRig.object3D.rotation.y = t * (Math.PI * 2 / 7);
+
+    /*
+      Tiny tilt makes the floating object feel less mechanical.
+    */
+    logoRig.object3D.rotation.x =
+      Math.sin(t * Math.PI * 0.8) * 0.035;
+
+    logoRig.object3D.rotation.z =
+      Math.cos(t * Math.PI * 0.55) * 0.025;
+  }
+
+  /* ---------------------------
+     PORTAL BREATHING / GLOW
+     --------------------------- */
+  const pulse = 1 + Math.sin(elapsed / 350) * 0.08;
+
+  ring1.object3D.scale.set(pulse, pulse, pulse);
+  ring2.object3D.scale.set(pulse * 1.05, pulse * 1.05, pulse * 1.05);
+  ring3.object3D.scale.set(pulse * 1.10, pulse * 1.10, pulse * 1.10);
+
+  gemCore.object3D.rotation.y = elapsed / 1200;
+  gemCore.object3D.rotation.x = elapsed / 1700;
+
+  /* Sparks */
+  const sparkT = Math.min(Math.max((elapsed - 250) / 800, 0), 1);
+  const sparkS = easeOutCubic(sparkT);
+
+  setScale(spark1, sparkS);
+  setScale(spark2, sparkS);
+  setScale(spark3, sparkS);
+
+  raf = requestAnimationFrame(animate);
+}
+
+target.addEventListener('targetFound', () => {
+  resetScene();
+
+  active = true;
+  startTime = performance.now();
+
+  requestAnimationFrame(animate);
+});
+
+target.addEventListener('targetLost', () => {
+  resetScene();
+});
+
+/* Start hidden */
+resetScene();
+</script>
+
+</body>
+</html>
